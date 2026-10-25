@@ -35,7 +35,7 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:18px 0 84px}
 </style></head><body><div id="app"></div><dialog id="dg"></dialog><div id="t"></div><div id="rc"></div>
 <script>
 // ====== Koneksi Supabase diisi lewat aplikasi (tombol Koneksi Supabase), tidak perlu edit kode ======
-const APP_VER='2026.10.24-i';
+const APP_VER='2026.10.24-j';
 (()=>{const m=location.hash.match(/^#c=([a-z0-9-]+)\.(.+)$/);if(m){localStorage.setItem('bc_cfg',JSON.stringify({url:'https://'+m[1]+'.supabase.co',key:m[2]}));history.replaceState(null,'',location.pathname+location.search)}})();
 // Isi bawaan koneksi (opsional). Dipakai jika config.json dan pengisian manual tidak ada.
 const CFG_DEFAULT={url:'',key:''};
@@ -401,9 +401,9 @@ const ABOUT='Kedai Paradise, Jl.D.A.H Hamzah no.18',ABOUT_TEL='081257161722';
 function waNum(t,msg){let p=String(t).replace(/\D/g,'');if(p[0]==='0')p='62'+p.slice(1);if(!p)return toast('Nomor kosong');window.open('https://wa.me/'+p+(msg?'?text='+encodeURIComponent(msg):''),'_blank')}
 const age=d=>d?Math.floor((Date.now()-new Date(d))/31557600000):'',nextQ=()=>{const td=dkey(new Date());return 1+S.orders.filter(o=>o.qn&&dkey(new Date(o.date))===td).reduce((m,o)=>Math.max(m,o.qn),0)};
 // ===== lisensi / dukungan =====
-const LIC={url:'',key:'',enforce:false};
+const LIC={url:'https://flfcrnuzaijydcahctnj.supabase.co',key:'sb_publishable_64s9cIol8IpQfV-_s-wL9g_rrucHS-v',enforce:false};
 let licSt=JSON.parse(localStorage.getItem('bc_licst')||'null');
-async function licCheck(){if(!LIC.url)return;const code=localStorage.getItem('bc_lic')||'';try{const r=await fetch(LIC.url+'/rest/v1/rpc/check_license',{method:'POST',headers:{apikey:LIC.key,Authorization:'Bearer '+LIC.key,'Content-Type':'application/json'},body:JSON.stringify({p_code:code})});if(!r.ok)throw 0;licSt={...(await r.json()),at:Date.now()};localStorage.setItem('bc_licst',JSON.stringify(licSt));licUpd()}catch(e){}}
+async function licCheck(){if(!LIC.url)return;const code=localStorage.getItem('bc_lic')||'';try{const r=await fetch(LIC.url+'/rest/v1/rpc/check_license',{method:'POST',headers:{apikey:LIC.key,...(LIC.key.startsWith('sb_')?{}:{Authorization:'Bearer '+LIC.key}),'Content-Type':'application/json'},body:JSON.stringify({p_code:code})});if(!r.ok)throw 0;licSt={...(await r.json()),at:Date.now()};localStorage.setItem('bc_licst',JSON.stringify(licSt));licUpd()}catch(e){}}
 setInterval(licCheck,6*36e5);
 function licState(){if(!LIC.url)return{s:'off'};if(!licSt)return{s:'none'};if(licSt.unlimited)return{s:'unlimited'};if(!licSt.ok&&!licSt.until)return{s:'invalid'};const left=Math.ceil((new Date(licSt.until+'T23:59:59')-Date.now())/864e5);return left<0?{s:'expired',left}:left<=7?{s:'soon',left}:{s:'ok',left}}
 function licUpd(){const e=$('#lic');if(!e)return;const st=licState(),m={none:'Dukung BeancultsPOS: masukkan kode dukungan',invalid:'Kode dukungan tidak dikenali',expired:'Dukungan berakhir. Traktir kopi ☕ untuk melanjutkan',soon:'Dukungan berakhir '+st.left+' hari lagi. Traktir kopi ☕'}[st.s];e.innerHTML=m?`<div class=lc onclick="go('dukung')">${m}</div>`:''}
